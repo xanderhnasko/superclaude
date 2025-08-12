@@ -2,3 +2,7 @@ logs/
 state/
 *.log
 .DS_Store
+
+# Documentation files
+docs/Super CC Technical Implementation Plan.json
+docs/Super CC Architecture.md
