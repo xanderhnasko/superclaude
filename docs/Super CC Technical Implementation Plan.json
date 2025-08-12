@@ -1,0 +1,247 @@
+{
+  "version": "2.0",
+  "description": "Claude Code native multi-agent workflow - simplified and realistic",
+  "claude_code_version": "latest",
+  "philosophy": "Leverage Claude's native capabilities, avoid reimplementing existing features",
+  
+  "core_principles": [
+    "Use Claude's natural language understanding over complex scripts",
+    "Leverage built-in commands before creating custom ones",
+    "Keep agents focused with clear trigger words",
+    "Use simple bash scripts, not complex parsing",
+    "Trust Claude's context management over manual compression"
+  ],
+
+  "native_features_used": {
+    "built_in_commands": [
+      "/chat new - Start fresh context for new tasks",
+      "/compact - Compress conversation while preserving key details",
+      "/save [name] - Save conversation state",
+      "/load [name] - Restore conversation state",
+      "/test - Run project tests",
+      "/lint - Run linters",
+      "/format - Format code"
+    ],
+    "delegation": {
+      "automatic": "Claude selects agents based on trigger words in description",
+      "explicit": "Use Task tool to explicitly call an agent"
+    },
+    "context_management": {
+      "strategy": "Trust Claude's native context window",
+      "compression": "Use /compact when conversation gets long",
+      "isolation": "Agents run in separate context windows"
+    }
+  },
+
+  "directory_structure": {
+    "root": ".claude",
+    "subdirs": [
+      "agents     - Agent definition files (*.md)",
+      "commands   - Custom slash commands (*.md)",  
+      "hooks      - Event hook scripts (*.sh)",
+      "logs       - Simple append-only logs",
+      "state      - Conversation saves and context"
+    ],
+    "project_dirs": [
+      "src        - Source code",
+      "tests      - Test files",
+      "docs       - Documentation"
+    ]
+  },
+
+  "agents": [
+    {
+      "name": "architect",
+      "file": ".claude/agents/architect.md",
+      "trigger_words": ["architecture", "design", "system design", "technical debt", "refactor strategy"],
+      "tools": ["read", "bash"],
+      "bash_allowlist": ["grep", "find", "tree", "git log", "git diff"],
+      "prompt_template": "---\ndescription: System architect for design reviews and architectural decisions\ntrigger: architecture review, system design, design patterns, technical debt analysis\ntools: [read, bash]\n---\n\nYou are a senior software architect. When engaged, you:\n\n1. Analyze system structure and identify architectural patterns\n2. Evaluate proposed changes for architectural impact\n3. Identify coupling, cohesion issues, and technical debt\n4. Recommend design patterns and architectural improvements\n5. Flag potential scalability or maintainability concerns\n\nFocus on high-level design rather than implementation details. Provide clear, actionable recommendations with trade-offs explained.\n\nUse grep and find to explore codebase structure. Read key files to understand architecture."
+    },
+    {
+      "name": "planner", 
+      "file": ".claude/agents/planner.md",
+      "trigger_words": ["plan", "planning", "roadmap", "implementation plan", "task breakdown"],
+      "tools": ["read"],
+      "prompt_template": "---\ndescription: Planning specialist for breaking down features into tasks\ntrigger: create plan, implementation planning, task breakdown, feature roadmap\ntools: [read]\n---\n\nYou are a technical planning specialist. Your role is to:\n\n1. Break down feature requests into concrete, testable tasks\n2. Identify dependencies between tasks\n3. Provide clear acceptance criteria for each task\n4. Estimate relative complexity (simple/medium/complex)\n5. Suggest implementation order\n\nOutput format:\n## Implementation Plan: [Feature Name]\n\n### Phase 1: [Foundation]\n- **Task 1.1**: [Specific task]\n  - Acceptance: [Measurable criteria]\n  - Complexity: [S/M/L]\n  - Dependencies: [None or list]\n\nKeep tasks small enough to complete in <2 hours. Focus on iterative delivery."
+    },
+    {
+      "name": "tester",
+      "file": ".claude/agents/tester.md", 
+      "trigger_words": ["write tests", "unit test", "test coverage", "TDD", "test first"],
+      "tools": ["read", "write", "bash"],
+      "write_paths": ["tests/**"],
+      "bash_allowlist": ["pytest", "npm test", "npx vitest", "jest"],
+      "prompt_template": "---\ndescription: Test-driven development specialist\ntrigger: write tests, create unit tests, test-driven development, test coverage\ntools: [read, write, bash]\n---\n\nYou are a TDD specialist. Follow this workflow:\n\n1. **Red Phase**: Write failing tests FIRST\n   - Test the interface, not implementation\n   - Cover edge cases and error conditions\n   - Each test should have a single assertion when possible\n   - Tests must fail initially (no implementation exists)\n\n2. **Green Phase**: Guide implementation\n   - After tests are written, implement minimal code to pass\n   - Run tests frequently during implementation\n   - Stop as soon as tests pass\n\n3. **Refactor Phase**: Clean up if needed\n   - Only refactor with passing tests\n   - Run tests after each change\n\nWrite tests in appropriate framework:\n- Python: pytest with clear test_* names\n- JavaScript/TypeScript: vitest or jest\n- Follow existing test patterns in the project\n\nTests go in tests/ directory, mirroring src/ structure."
+    },
+    {
+      "name": "debugger",
+      "file": ".claude/agents/debugger.md",
+      "trigger_words": ["debug", "fix bug", "test failing", "error", "stack trace", "diagnose"],
+      "tools": ["read", "bash"],
+      "bash_allowlist": ["pytest -v", "npm test", "grep", "find", "cat", "git diff", "git log"],
+      "prompt_template": "---\ndescription: Debugging specialist for test failures and errors\ntrigger: debug issue, test failure, error diagnosis, stack trace analysis, fix bug\ntools: [read, bash]\n---\n\nYou are a debugging specialist. When engaged:\n\n1. **Analyze**: Read error messages and stack traces carefully\n2. **Hypothesize**: Form specific hypotheses about root cause\n3. **Investigate**: Use grep/find to explore related code\n4. **Isolate**: Identify the minimal failing case\n5. **Propose**: Suggest specific fix with explanation\n\nDo NOT write code directly. Instead:\n- Explain the root cause clearly\n- Provide specific fix instructions\n- Suggest additional tests to prevent regression\n\nUse verbose test output to understand failures. Read relevant source files. Check recent git changes if relevant."
+    },
+    {
+      "name": "reviewer",
+      "file": ".claude/agents/reviewer.md",
+      "trigger_words": ["review code", "code review", "PR review", "check changes", "audit code"],
+      "tools": ["read", "bash"],
+      "bash_allowlist": ["git diff", "git log", "ruff", "eslint", "mypy", "prettier", "black"],
+      "prompt_template": "---\ndescription: Code reviewer for quality and security checks\ntrigger: review code, code review, security review, quality check, PR review\ntools: [read, bash]\n---\n\nYou are a senior code reviewer. Review code in priority order:\n\n1. **Correctness**: Logic errors, boundary conditions, error handling\n2. **Security**: Input validation, injection risks, auth issues\n3. **Performance**: O(n) complexity problems, unnecessary operations\n4. **Maintainability**: Naming, structure, documentation\n5. **Style**: Formatting, conventions (least important)\n\nProcess:\n1. Run `git diff` to see recent changes\n2. Check test coverage for new code\n3. Run static analysis tools if available\n4. Provide specific, actionable feedback\n\nOutput format:\n## Code Review\n\n### Critical Issues\n- [If any, these must be fixed]\n\n### Suggestions  \n- [Improvements that should be considered]\n\n### Nitpicks\n- [Minor style/preference items]\n\nBe constructive. Explain WHY something is an issue."
+    },
+    {
+      "name": "documenter",
+      "file": ".claude/agents/documenter.md",
+      "trigger_words": ["document", "write docs", "update README", "API docs", "documentation"],
+      "tools": ["read", "write"],
+      "write_paths": ["docs/**", "README.md", "*.md"],
+      "prompt_template": "---\ndescription: Documentation specialist\ntrigger: write documentation, update docs, API documentation, README update\ntools: [read, write]\n---\n\nYou are a technical documentation specialist. You create:\n\n1. **README files**: Clear project overview, setup, usage\n2. **API docs**: Function signatures, parameters, examples\n3. **Architecture docs**: System design, component interaction\n4. **Code comments**: Complex logic explanation (sparingly)\n\nPrinciples:\n- Write for developers new to the codebase\n- Include concrete examples\n- Keep docs close to code (in same repo)\n- Update docs when code changes\n- Prefer clarity over brevity\n\nCheck existing docs before creating new ones. Follow project conventions."
+    }
+  ],
+
+  "commands": [
+    {
+      "name": "tdd",
+      "file": ".claude/commands/tdd.md",
+      "description": "Start TDD cycle for a feature",
+      "content": "---\ndescription: Start test-driven development cycle\nargument: feature-description\n---\n\nStarting TDD cycle for: $ARGUMENT\n\n1. First, I'll write failing tests using the tester agent\n2. Then implement minimal code to pass tests\n3. Finally, refactor if needed\n\nLet's begin with tests..."
+    },
+    {
+      "name": "review",
+      "file": ".claude/commands/review.md",
+      "description": "Run comprehensive code review",
+      "content": "---\ndescription: Run comprehensive code review\n---\n\nRunning code review pipeline:\n\n1. Static analysis (if tools available)\n2. Test coverage check\n3. Security scan\n4. Code review by reviewer agent\n\nStarting review process..."
+    },
+    {
+      "name": "context",
+      "file": ".claude/commands/context.md",
+      "description": "Summarize current project context",
+      "content": "---\ndescription: Summarize project context\nargument: paths (optional)\n---\n\nI'll analyze the project structure and provide a summary of:\n- Main components and their roles\n- Recent changes (from git log)\n- Test coverage\n- Key dependencies\n- Open TODOs\n\nAnalyzing project..."
+    }
+  ],
+
+  "hooks": [
+    {
+      "name": "pre_tool_use",
+      "file": ".claude/hooks/pre_tool_use.sh",
+      "content": "#!/bin/bash\n# Simple pre-tool-use hook\nTOOL=\"$1\"\nPATH=\"$2\"\n\n# Check if path is in denylist\nif [[ \"$PATH\" =~ \\.(git|env|claude)/ ]]; then\n  echo \"Blocked: Protected path\"\n  exit 1\nfi\n\n# Log the action\necho \"$(date '+%Y-%m-%d %H:%M:%S') - $TOOL: $PATH\" >> .claude/logs/tools.log\nexit 0"
+    },
+    {
+      "name": "post_tool_use", 
+      "file": ".claude/hooks/post_tool_use.sh",
+      "content": "#!/bin/bash\n# Simple post-tool-use hook\nTOOL=\"$1\"\nEXIT_CODE=\"$2\"\n\n# Auto-format if code was edited\nif [[ \"$TOOL\" == \"write\" || \"$TOOL\" == \"edit\" ]]; then\n  # Try formatters if available\n  command -v black >/dev/null && black --quiet . 2>/dev/null\n  command -v prettier >/dev/null && prettier --write . 2>/dev/null\nfi\n\n# If tests failed, suggest debugger\nif [[ \"$EXIT_CODE\" != \"0\" && \"$TOOL\" == \"bash\" ]]; then\n  echo \"Tests failed. Consider using: 'Run debugger agent to diagnose'\"\nfi\n\nexit 0"
+    }
+  ],
+
+  "bootstrap_script": {
+    "path": "scripts/setup_claude.sh",
+    "content": "#!/bin/bash\n# Claude Code Environment Setup\nset -e\n\necho \"Setting up Claude Code environment...\"\n\n# Create directory structure\nmkdir -p .claude/{agents,commands,hooks,logs,state}\nmkdir -p {src,tests,docs}\n\n# Create .gitignore for Claude files\ncat > .claude/.gitignore << 'EOF'\nlogs/\nstate/\n*.log\n.DS_Store\nEOF\n\n# Detect language and install tools\nif [ -f \"package.json\" ]; then\n  echo \"Node.js project detected\"\n  npm install --save-dev vitest eslint prettier typescript @types/node\nelif [ -f \"requirements.txt\" ]; then\n  echo \"Python project detected\"\n  pip install pytest black ruff mypy\nelse\n  echo \"No package file found, skipping dependency installation\"\nfi\n\n# Make hooks executable\nchmod +x .claude/hooks/*.sh 2>/dev/null || true\n\n# Create initial context file\necho \"{}\" > .claude/state/context.json\n\n# Success message\necho \"✓ Claude Code environment ready!\"\necho \"  - Agents in: .claude/agents/\"\necho \"  - Commands in: .claude/commands/\"\necho \"  - Logs in: .claude/logs/\"\necho \"\"\necho \"Start with: claude chat\"\necho \"Then use: /tdd 'your feature description'\""
+  },
+
+  "workflow_patterns": {
+    "feature_development": {
+      "description": "Standard TDD workflow for new features",
+      "steps": [
+        "1. /chat new - Start fresh context",
+        "2. /context - Understand current state", 
+        "3. Describe feature requirements",
+        "4. 'Plan implementation' - Triggers planner agent",
+        "5. /tdd [first task] - Start TDD cycle",
+        "6. Implement until tests pass",
+        "7. 'Review my changes' - Triggers reviewer",
+        "8. /compact - Compress conversation",
+        "9. Repeat from step 5 for next task"
+      ]
+    },
+    "bug_fix": {
+      "description": "Debug and fix failing tests",
+      "steps": [
+        "1. Run failing test to see error",
+        "2. 'Debug this test failure' - Triggers debugger",
+        "3. Apply suggested fix",
+        "4. Run tests to confirm fix",
+        "5. 'Review my fix' - Triggers reviewer"
+      ]
+    },
+    "refactoring": {
+      "description": "Improve code without changing behavior",
+      "steps": [
+        "1. Ensure all tests pass first",
+        "2. 'Review architecture' - Triggers architect",
+        "3. Plan refactoring based on recommendations",
+        "4. Make small, incremental changes",
+        "5. Run tests after each change",
+        "6. 'Review refactoring' - Final review"
+      ]
+    }
+  },
+
+  "best_practices": {
+    "context_management": [
+      "Use /compact every 20-30 messages",
+      "Use /chat new for unrelated tasks",
+      "Save important contexts with /save [name]",
+      "Keep agent interactions focused"
+    ],
+    "agent_usage": [
+      "Let Claude auto-select agents via trigger words",
+      "Use explicit 'Run [agent] agent' when needed",
+      "Don't chain too many agents in sequence",
+      "Trust agent specialization"
+    ],
+    "testing": [
+      "Always write tests first (TDD)",
+      "Run tests frequently during development",
+      "Keep tests focused and fast",
+      "Use debugger agent for failures"
+    ],
+    "code_quality": [
+      "Review before committing",
+      "Let formatters handle style",
+      "Focus on correctness over optimization",
+      "Document non-obvious decisions"
+    ]
+  },
+
+  "limitations_acknowledged": [
+    "No parallel agent execution",
+    "No complex conditionals in workflows",
+    "No automatic agent chaining",
+    "Hooks are simple bash only",
+    "Path restrictions are guidelines, not enforced",
+    "Claude chooses agents, not scripts"
+  ],
+
+  "simplified_approaches": {
+    "context_synthesis": "Trust Claude's native understanding instead of 300-token compression",
+    "permission_system": "Use simple path checks, not complex regex",
+    "workflow_automation": "Guide with patterns, don't try to script",
+    "state_management": "Use Claude's /save and /load, not custom system",
+    "logging": "Simple append-only text logs, not complex JSON"
+  },
+
+  "example_session": [
+    "$ claude chat",
+    "Claude: How can I help with your project?",
+    "You: I need to add user authentication to the API",
+    "Claude: I'll help you implement user authentication. Let me start by understanding the current architecture.",
+    "[Claude automatically invokes architect agent based on 'architecture' trigger]",
+    "Architect: [Reviews current system...]",
+    "Claude: Based on the architecture review, here's my recommended approach. Shall we create an implementation plan?",
+    "You: Yes, please plan this out",
+    "[Claude invokes planner agent]",
+    "Planner: [Creates phased implementation plan...]",
+    "Claude: Great! Let's start with the first task using TDD. Use: /tdd 'Create User model with password hashing'",
+    "You: /tdd Create User model with password hashing",
+    "[TDD cycle begins with tester agent writing tests first...]"
+  ],
+
+  "success_metrics": [
+    "All features have tests written first",
+    "Code reviews happen before commits",
+    "Agents stay focused on their specialization",
+    "Context remains manageable through /compact",
+    "Development velocity improves through automation"
+  ]
+}
