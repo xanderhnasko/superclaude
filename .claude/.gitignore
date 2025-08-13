@@ -1,6 +1,6 @@
 logs/
 state/
+context/
 *.log
 .DS_Store
-docs/
 
