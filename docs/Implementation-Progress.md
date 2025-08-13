@@ -344,19 +344,23 @@ The full agent ecosystem is **production-ready** with all core components tested
 - ✅ **Context Directory Structure**: `.claude/context/` with summaries/ and tracking files
 - ✅ **Git-Based Incremental Updates**: Only processes changed files since last commit
 - ✅ **Performance Optimization**: 83%+ cache hit rates for typical development sessions
+- ✅ **Human-Readable Cache Names**: Replaced hash-based with path-based naming convention
+- ✅ **Git Hygiene**: Context cache excluded from repository via .gitignore
 
 **Key Achievements**:
 - **Context Command Enhancement**: `/context-synth` produces structured JSON summaries from file globs
-- **Intelligent Caching System**: Hash-based file summaries stored in `.claude/context/summaries/`
+- **Intelligent Caching System**: Human-readable file summaries stored as `filename_summary.json`
 - **Git Change Tracking**: Leverages `git diff` to identify files requiring re-synthesis
 - **Scalability Solution**: Large codebases processed efficiently through incremental updates
 - **Performance Metrics**: ~95% time reduction for incremental context updates
+- **Developer Experience**: Cache files instantly identifiable (e.g., `docs_Architecture_md_summary.json`)
 
 **Technical Validation**:
 - **Context Synthesis**: Successfully tested with "docs/** .claude/**" pattern
-- **Cache Management**: Demonstrated efficient storage/retrieval via MD5 file hashing  
+- **Cache Management**: Human-readable naming convention with path-to-filename conversion
 - **Git Integration**: Proper commit tracking via `.claude/context/last-build-commit`
 - **Agent Coordination**: Context-synth agent integrates seamlessly with existing workflow
+- **Repository Hygiene**: Cache files git-ignored to prevent repository bloat
 
 **Context Synthesis Schema**:
 ```json
