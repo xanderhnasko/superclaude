@@ -1,0 +1,11 @@
+{
+  "path": ".claude/hooks/pre_tool_use.sh",
+  "main_roles": ["Tool usage authorization", "File path protection", "Activity logging"],
+  "apis": ["bash script", "exit codes"],
+  "todos": [],
+  "complexity": "low",
+  "dependencies": ["bash", "date", "regex patterns"],
+  "summary": "Pre-tool-use hook that blocks access to protected directories (.git, .env, .claude) and logs all tool usage to .claude/logs/tools.log with timestamps. Simple security mechanism for the multi-agent system.",
+  "last_modified": "2025-01-12T10:30:00Z",
+  "file_hash": "eb5e83b9c36316291815aa4b1ea39fbb"
+}

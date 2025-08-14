@@ -1,0 +1,42 @@
+{
+  "path": ".claude/commands/tdd.md",
+  "main_roles": [
+    "TDD workflow orchestration",
+    "Red-Green-Refactor cycle management",
+    "Multi-agent development coordination"
+  ],
+  "apis": [
+    "/tdd command with feature description",
+    "Agent triggering patterns",
+    "Workflow phase management"
+  ],
+  "todos": [
+    "Add progress tracking integration",
+    "Implement automated agent triggers",
+    "Create workflow state persistence"
+  ],
+  "complexity": "medium",
+  "dependencies": [
+    "Planner agent for task breakdown",
+    "Tester agent for test creation",
+    "Reviewer agent for quality gates"
+  ],
+  "workflow_phases": [
+    "Planning Phase: Feature breakdown via planner agent",
+    "Red Phase: Failing test creation",
+    "Green Phase: Minimal implementation",
+    "Refactor Phase: Code cleanup",
+    "Review Phase: Quality validation"
+  ],
+  "agent_integration": [
+    "Planner agent for implementation planning",
+    "Tester agent for test-first development",
+    "Reviewer agent for quality assurance"
+  ],
+  "tdd_cycle": [
+    "Red → Green → Refactor pattern",
+    "Strict test-first enforcement",
+    "Minimal implementation approach",
+    "Comprehensive review gates"
+  ]
+}

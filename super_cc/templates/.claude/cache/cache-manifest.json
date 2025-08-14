@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Cache Manifest",
+  "description": "Tracks which agents ran for which commits and their cache status",
+  "version": "1.0",
+  "last_updated": "2025-01-14T12:00:00Z",
+  "git_info": {
+    "last_analysis_commit": "",
+    "current_branch": "",
+    "repository_path": ""
+  },
+  "cache_entries": {},
+  "cache_stats": {
+    "total_entries": 0,
+    "total_size_mb": 0,
+    "hit_rate_percentage": 0,
+    "agents": {}
+  },
+  "cleanup_log": []
+}

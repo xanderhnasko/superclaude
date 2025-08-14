@@ -150,10 +150,13 @@ yarn-error.log*
 ehthumbs.db
 Thumbs.db
 
-# Claude Code specific
-.claude/logs/
-.claude/state/
-.claude/*.log
+# Claude Code specific - exclude development environment
+.claude/
+
+# Development files - not needed for distribution
+docs/
+scripts/
+CLAUDE.md
 
 # Temporary files
 *.tmp

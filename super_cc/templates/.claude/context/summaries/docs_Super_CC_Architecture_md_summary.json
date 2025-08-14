@@ -1,0 +1,38 @@
+{
+  "path": "docs/Super CC Architecture.md",
+  "main_roles": [
+    "Multi-agent development workflow architecture",
+    "Claude Code native capabilities orchestration",
+    "TDD-centric development patterns definition"
+  ],
+  "apis": [
+    "Context Synthesizer (/context-synth command)",
+    "Workflow orchestration system",
+    "Subagent delegation patterns"
+  ],
+  "todos": [
+    "Implement Phase 1 core TDD loop",
+    "Create workflow YAML configurations",
+    "Build parallel execution support"
+  ],
+  "complexity": "high",
+  "dependencies": [
+    "Claude Code subagents",
+    "Git-based incremental processing",
+    "Slash commands and hooks system"
+  ],
+  "key_concepts": [
+    "8 specialized subagents (Context Synthesizer, Architect, Planner, Tester, Debugger, Cleaner, Code Reviewer, Integration Tester)",
+    "Red-green-refactor TDD cycle enforcement",
+    "Tool permission scoping per agent",
+    "Git-based incremental context synthesis"
+  ],
+  "workflow_stages": [
+    "Context setup via synthesizer",
+    "Architecture review for major features",
+    "Planning with task breakdown",
+    "TDD implementation loop",
+    "Multi-pass code review pipeline",
+    "Optional integration testing"
+  ]
+}
