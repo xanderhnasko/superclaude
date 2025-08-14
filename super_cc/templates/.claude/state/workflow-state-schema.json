@@ -1,0 +1,324 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Workflow State Schema",
+  "description": "Schema for persisting workflow execution state",
+  "type": "object",
+  "required": ["workflow_metadata", "execution_context", "step_history"],
+  "properties": {
+    "workflow_metadata": {
+      "type": "object",
+      "required": ["id", "name", "version", "status", "started_at"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique workflow instance identifier",
+          "pattern": "^[a-z-]+-[0-9]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Workflow name from YAML configuration"
+        },
+        "version": {
+          "type": "string",
+          "description": "Workflow configuration version"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["initializing", "running", "paused", "completed", "failed", "cancelled"],
+          "description": "Current workflow status"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Workflow start timestamp"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Workflow completion timestamp"
+        },
+        "duration_seconds": {
+          "type": "number",
+          "description": "Total execution duration in seconds"
+        },
+        "user": {
+          "type": "string",
+          "description": "User who initiated the workflow"
+        },
+        "git_commit": {
+          "type": "string",
+          "description": "Git commit hash at workflow start"
+        }
+      }
+    },
+    "execution_context": {
+      "type": "object",
+      "required": ["current_step", "total_steps", "parameters"],
+      "properties": {
+        "current_step": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Index of current step being executed"
+        },
+        "total_steps": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of steps in workflow"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Workflow input parameters",
+          "patternProperties": {
+            ".*": {
+              "oneOf": [
+                {"type": "string"},
+                {"type": "number"},
+                {"type": "boolean"},
+                {"type": "array"},
+                {"type": "object"}
+              ]
+            }
+          }
+        },
+        "variables": {
+          "type": "object",
+          "description": "Runtime variables available for template substitution",
+          "patternProperties": {
+            ".*": {
+              "oneOf": [
+                {"type": "string"},
+                {"type": "number"},
+                {"type": "boolean"},
+                {"type": "array"},
+                {"type": "object"}
+              ]
+            }
+          }
+        },
+        "environment": {
+          "type": "object",
+          "description": "Environment context at workflow start",
+          "properties": {
+            "working_directory": {"type": "string"},
+            "git_branch": {"type": "string"},
+            "claude_version": {"type": "string"},
+            "system_info": {"type": "object"}
+          }
+        }
+      }
+    },
+    "step_history": {
+      "type": "array",
+      "description": "History of completed workflow steps",
+      "items": {
+        "type": "object",
+        "required": ["step_index", "step_name", "status", "started_at"],
+        "properties": {
+          "step_index": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Step index in workflow sequence"
+          },
+          "step_name": {
+            "type": "string",
+            "description": "Step identifier from workflow configuration"
+          },
+          "step_type": {
+            "type": "string",
+            "enum": ["agent", "bash", "parallel_group", "loop"],
+            "description": "Type of step executed"
+          },
+          "agent_name": {
+            "type": "string",
+            "description": "Agent used for this step (if applicable)"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "running", "completed", "failed", "skipped"],
+            "description": "Step execution status"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Step start timestamp"
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Step completion timestamp"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "description": "Step execution duration"
+          },
+          "inputs": {
+            "type": "object",
+            "description": "Inputs provided to this step",
+            "patternProperties": {
+              ".*": {
+                "oneOf": [
+                  {"type": "string"},
+                  {"type": "number"},
+                  {"type": "boolean"},
+                  {"type": "array"},
+                  {"type": "object"}
+                ]
+              }
+            }
+          },
+          "outputs": {
+            "type": "object",
+            "description": "Outputs produced by this step",
+            "patternProperties": {
+              ".*": {
+                "oneOf": [
+                  {"type": "string"},
+                  {"type": "number"},
+                  {"type": "boolean"},
+                  {"type": "array"},
+                  {"type": "object"}
+                ]
+              }
+            }
+          },
+          "condition_evaluated": {
+            "type": "boolean",
+            "description": "Whether step condition was evaluated"
+          },
+          "condition_result": {
+            "type": "boolean",
+            "description": "Result of condition evaluation"
+          },
+          "error_info": {
+            "type": "object",
+            "description": "Error information if step failed",
+            "properties": {
+              "error_type": {"type": "string"},
+              "error_message": {"type": "string"},
+              "stack_trace": {"type": "string"},
+              "recovery_attempted": {"type": "boolean"},
+              "retry_count": {"type": "integer"}
+            }
+          }
+        }
+      }
+    },
+    "parallel_execution_tracking": {
+      "type": "object",
+      "description": "Tracking information for parallel execution",
+      "properties": {
+        "active_groups": {
+          "type": "array",
+          "description": "Currently executing parallel groups",
+          "items": {
+            "type": "object",
+            "properties": {
+              "group_name": {"type": "string"},
+              "agents": {"type": "array", "items": {"type": "string"}},
+              "started_at": {"type": "string", "format": "date-time"},
+              "progress": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string",
+                    "enum": ["pending", "running", "completed", "failed"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "completed_groups": {
+          "type": "array",
+          "description": "Completed parallel groups",
+          "items": {
+            "type": "object",
+            "properties": {
+              "group_name": {"type": "string"},
+              "agents": {"type": "array", "items": {"type": "string"}},
+              "started_at": {"type": "string", "format": "date-time"},
+              "completed_at": {"type": "string", "format": "date-time"},
+              "duration_seconds": {"type": "number"},
+              "success_count": {"type": "integer"},
+              "failure_count": {"type": "integer"},
+              "results": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "object",
+                    "properties": {
+                      "status": {"type": "string"},
+                      "output": {"type": "object"},
+                      "duration": {"type": "number"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "loop_execution_tracking": {
+      "type": "object",
+      "description": "Tracking information for loop execution",
+      "properties": {
+        "active_loops": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "loop_name": {"type": "string"},
+              "iteration": {"type": "integer"},
+              "max_iterations": {"type": "integer"},
+              "condition": {"type": "string"},
+              "started_at": {"type": "string", "format": "date-time"}
+            }
+          }
+        },
+        "completed_loops": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "loop_name": {"type": "string"},
+              "total_iterations": {"type": "integer"},
+              "completion_reason": {
+                "type": "string",
+                "enum": ["condition_met", "max_iterations", "manual_break", "error"]
+              },
+              "duration_seconds": {"type": "number"}
+            }
+          }
+        }
+      }
+    },
+    "resource_usage": {
+      "type": "object",
+      "description": "Resource usage tracking",
+      "properties": {
+        "agent_invocations": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {"type": "integer"}
+          }
+        },
+        "total_execution_time": {"type": "number"},
+        "parallel_efficiency": {"type": "number"},
+        "memory_peak_mb": {"type": "number"},
+        "api_calls_made": {"type": "integer"}
+      }
+    },
+    "checkpoint_data": {
+      "type": "object",
+      "description": "Data needed to resume workflow from checkpoints",
+      "properties": {
+        "last_checkpoint_step": {"type": "integer"},
+        "checkpoint_timestamp": {"type": "string", "format": "date-time"},
+        "resumable": {"type": "boolean"},
+        "resume_instructions": {"type": "string"},
+        "state_integrity_hash": {"type": "string"}
+      }
+    }
+  }
+}

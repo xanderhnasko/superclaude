@@ -1,0 +1,43 @@
+{
+  "path": ".claude/agents/planner.md",
+  "main_roles": [
+    "Feature breakdown into testable tasks",
+    "Implementation planning and roadmapping",
+    "TDD workflow optimization"
+  ],
+  "apis": [
+    "Task breakdown methodology",
+    "Structured planning output format",
+    "Dependency analysis framework"
+  ],
+  "todos": [
+    "Integration with context-synth for better planning",
+    "Add complexity estimation guidelines",
+    "Create planning templates for common patterns"
+  ],
+  "complexity": "medium",
+  "dependencies": [
+    "Read tool for project analysis",
+    "Existing codebase understanding",
+    "TDD principles and patterns"
+  ],
+  "key_responsibilities": [
+    "Break features into <2hr tasks",
+    "Define clear acceptance criteria",
+    "Identify task dependencies",
+    "Estimate relative complexity",
+    "Ensure test-first compatibility"
+  ],
+  "output_structure": [
+    "Overview with feature summary",
+    "Phased implementation approach",
+    "Detailed task specifications",
+    "Implementation notes and considerations"
+  ],
+  "planning_principles": [
+    "Small, actionable tasks",
+    "Test-first mindset",
+    "Incremental delivery focus",
+    "Clear, measurable criteria"
+  ]
+}

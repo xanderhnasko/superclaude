@@ -1,0 +1,7 @@
+logs/
+state/
+context/
+cache/
+*.log
+.DS_Store
+

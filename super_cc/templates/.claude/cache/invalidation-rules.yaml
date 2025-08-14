@@ -1,0 +1,143 @@
+# Agent Cache Invalidation Rules
+# Defines which file changes invalidate which agent caches
+
+version: "1.0"
+description: "Smart cache invalidation based on file change patterns"
+
+# Global rules - these file changes invalidate ALL agent caches
+global_invalidation:
+  patterns:
+    - "**/*.md"  # Documentation changes might affect all agents
+    - ".claude/**/*"  # Any agent/workflow changes
+    - "package.json"  # Dependency changes
+    - "requirements.txt"  # Python dependencies
+    - "Cargo.toml"  # Rust dependencies
+
+# Agent-specific invalidation rules with incremental analysis
+agent_rules:
+  planner:
+    description: "Invalidate planner cache when requirements or architecture changes"
+    patterns:
+      - "docs/**/*.md"
+      - "README*"
+      - "ARCHITECTURE*"
+      - "**/requirements.txt"
+      - "**/package.json"
+      - "src/**/models/**/*"  # Data model changes affect planning
+    
+    # Advanced scoped invalidation
+    scoped_invalidation:
+      feature_based:
+        # Only invalidate feature-specific planning caches
+        auth_feature:
+          patterns: ["src/auth/**/*", "docs/auth*", "tests/auth/**/*"]
+          preserve_global: true  # Keep global architectural plans
+        api_feature:
+          patterns: ["src/api/**/*", "docs/api*", "tests/api/**/*"]  
+          preserve_global: true
+    
+    incremental_analysis:
+      enabled: true
+      delta_threshold: 5  # Files changed - below this, use incremental update
+      preserve_conditions:
+        - "no_interface_changes"
+        - "documentation_only_changes" 
+        - "test_only_changes"
+    
+  architect:
+    description: "Invalidate architect cache on structural/design changes"
+    patterns:
+      - "src/**/*.py"
+      - "src/**/*.js"
+      - "src/**/*.ts"
+      - "src/**/*.rs"
+      - "docs/ARCHITECTURE*"
+      - "**/interfaces/**/*"
+      - "**/types/**/*"
+      - "**/schemas/**/*"
+    
+    # Cross-feature shared cache for architectural consistency
+    shared_cache:
+      enabled: true
+      scope: "architectural_patterns"
+      preserve_conditions:
+        - "implementation_details_only"  # Keep arch cache for implementation changes
+        - "test_changes_only"            # Tests don't affect architecture
+        - "documentation_updates"        # Doc updates don't change structure
+    
+    incremental_analysis:
+      enabled: true
+      delta_threshold: 3  # Low threshold - architecture sensitive to changes
+      impact_analysis: true  # Analyze change impact on overall architecture
+    
+  tester:
+    description: "Invalidate tester cache when test-related files change"
+    patterns:
+      - "tests/**/*"
+      - "**/test_*.py"
+      - "**/*.test.js"
+      - "**/*.spec.ts"
+      - "pytest.ini"
+      - "jest.config.*"
+      - "src/**/*"  # Source changes might need new tests
+    
+  reviewer:
+    description: "Invalidate reviewer cache on any source code changes"
+    patterns:
+      - "src/**/*"
+      - "lib/**/*" 
+      - "**/*.py"
+      - "**/*.js"
+      - "**/*.ts"
+      - "**/*.rs"
+      - "**/*.go"
+    
+  debugger:
+    description: "Debugger cache tied to specific error states - shorter TTL"
+    patterns:
+      - "src/**/*"  # Any source changes
+    ttl_hours: 2  # Debugger results expire quickly
+    
+  documenter:
+    description: "Invalidate documenter cache on code or doc changes"  
+    patterns:
+      - "src/**/*"
+      - "docs/**/*"
+      - "README*"
+      - "**/*.md"
+    
+  context-synth:
+    description: "Context synthesis uses existing git-based system"
+    patterns:
+      - "**/*"  # Already handled by existing context system
+    use_existing_system: true
+    
+  workflow-orchestrator:
+    description: "Invalidate orchestrator cache on workflow changes"
+    patterns:
+      - ".claude/workflows/**/*"
+      - ".claude/commands/**/*"
+      - ".claude/agents/**/*"
+
+# Cache scope patterns - limit cache scope to relevant files
+scope_patterns:
+  feature_based:
+    # For feature-specific work, scope cache to related files
+    authentication:
+      - "src/**/auth/**/*"
+      - "src/**/user/**/*" 
+      - "tests/**/auth/**/*"
+      - "docs/auth*"
+    
+    api:
+      - "src/**/api/**/*"
+      - "src/**/routes/**/*"
+      - "tests/**/api/**/*"
+      - "docs/api*"
+
+# Performance settings
+performance:
+  max_cache_age_hours: 168  # 1 week default
+  max_cache_entries_per_agent: 50
+  cleanup_threshold_mb: 100
+  cache_hit_reporting: true

@@ -1,0 +1,169 @@
+name: review-only
+description: Comprehensive code review pipeline without implementation
+version: "1.0"
+
+parameters:
+  - name: target_files
+    description: Files or patterns to review
+    default: "."
+  - name: review_type
+    description: Type of review (security, performance, style, all)
+    default: "all"
+  - name: commit_hash
+    description: Specific commit to review
+    required: false
+
+parallel_groups:
+  static_analysis:
+    description: Static analysis tools that can run in parallel
+    agents:
+      - linter
+      - type-checker
+      - complexity-analyzer
+      - dependency-checker
+  
+  security_analysis:
+    description: Security-focused analysis tools
+    agents:
+      - security-scanner
+      - vulnerability-checker
+      - secrets-detector
+  
+  quality_analysis:
+    description: Code quality analysis tools
+    agents:
+      - code-smell-detector
+      - performance-analyzer
+      - documentation-checker
+
+steps:
+  - name: context_preparation
+    agent: context-synth
+    description: "Prepare code context for review"
+    params:
+      files: "{{parameters.target_files}}"
+    output_var: "review_context"
+  
+  - name: change_analysis
+    type: bash
+    condition: "{{parameters.commit_hash}}"
+    command: "git diff {{parameters.commit_hash}}~1..{{parameters.commit_hash}} --name-only"
+    description: "Identify changed files for focused review"
+    output_var: "changed_files"
+  
+  - name: static_analysis_suite
+    type: parallel_group
+    group: static_analysis
+    condition: "{{parameters.review_type == 'all' || parameters.review_type == 'static'}}"
+    description: "Run static analysis tools in parallel"
+    inputs:
+      - "{{review_context}}"
+      - "{{changed_files}}"
+    output_var: "static_results"
+  
+  - name: security_analysis_suite
+    type: parallel_group
+    group: security_analysis
+    condition: "{{parameters.review_type == 'all' || parameters.review_type == 'security'}}"
+    description: "Run security analysis tools in parallel"
+    inputs:
+      - "{{review_context}}"
+      - "{{changed_files}}"
+    output_var: "security_results"
+  
+  - name: quality_analysis_suite
+    type: parallel_group
+    group: quality_analysis
+    condition: "{{parameters.review_type == 'all' || parameters.review_type == 'quality'}}"
+    description: "Run quality analysis tools in parallel"
+    inputs:
+      - "{{review_context}}"
+      - "{{changed_files}}"
+    output_var: "quality_results"
+  
+  - name: architectural_review
+    agent: architect
+    description: "Review architectural implications"
+    inputs:
+      - "{{review_context}}"
+      - "{{changed_files}}"
+      - "{{static_results}}"
+    output_var: "architecture_review"
+  
+  - name: comprehensive_ai_review
+    agent: reviewer
+    description: "AI-powered comprehensive code review"
+    inputs:
+      - "{{review_context}}"
+      - "{{changed_files}}"
+      - "{{static_results}}"
+      - "{{security_results}}"
+      - "{{quality_results}}"
+      - "{{architecture_review}}"
+    output_var: "ai_review"
+  
+  - name: test_coverage_analysis
+    type: bash
+    command: "pytest --cov --cov-report=json"
+    description: "Analyze test coverage"
+    output_var: "coverage_results"
+  
+  - name: performance_baseline
+    type: bash
+    condition: "{{parameters.review_type == 'all' || parameters.review_type == 'performance'}}"
+    command: "pytest --benchmark-only --benchmark-json=benchmark.json"
+    description: "Establish performance baseline"
+    output_var: "performance_baseline"
+  
+  - name: documentation_review
+    agent: documenter
+    description: "Review documentation completeness and quality"
+    inputs:
+      - "{{review_context}}"
+      - "{{changed_files}}"
+    output_var: "documentation_review"
+  
+  - name: consolidate_findings
+    agent: reviewer
+    description: "Consolidate all review findings into actionable report"
+    inputs:
+      - "{{static_results}}"
+      - "{{security_results}}"
+      - "{{quality_results}}"
+      - "{{architecture_review}}"
+      - "{{ai_review}}"
+      - "{{coverage_results}}"
+      - "{{performance_baseline}}"
+      - "{{documentation_review}}"
+    output_var: "consolidated_review"
+  
+  - name: prioritize_issues
+    agent: reviewer
+    description: "Prioritize issues by severity and impact"
+    inputs:
+      - "{{consolidated_review}}"
+    output_var: "prioritized_issues"
+  
+  - name: generate_report
+    agent: documenter
+    description: "Generate comprehensive review report"
+    inputs:
+      - "{{prioritized_issues}}"
+      - "{{consolidated_review}}"
+    output_var: "review_report"
+
+success_criteria:
+  - review_complete: true
+  - report_generated: true
+  - issues_prioritized: true
+
+output_artifacts:
+  - review_report
+  - prioritized_issues
+  - coverage_results
+  - performance_baseline
+
+state_tracking:
+  - review_progress
+  - issues_found
+  - review_status
