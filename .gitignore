@@ -153,6 +153,11 @@ Thumbs.db
 # Claude Code specific - exclude development environment
 .claude/
 
+# Development files - not needed for distribution
+docs/
+scripts/
+CLAUDE.md
+
 # Temporary files
 *.tmp
 *.temp
