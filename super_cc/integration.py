@@ -45,11 +45,11 @@ class GitignoreManager:
             missing_entries = self.CLAUDE_ENTRIES - existing_entries
             
             if not missing_entries:
-                print("✅ .gitignore already contains all Claude Code entries")
+                print(".gitignore already contains all Claude Code entries")
                 return True
             
             self._append_missing_entries(missing_entries)
-            print(f"✅ Added {len(missing_entries)} entries to .gitignore")
+            print(f"Added {len(missing_entries)} entries to .gitignore")
             return True
             
         except Exception as e:
@@ -135,7 +135,7 @@ class ClaudeDirectoryManager:
                 if template_file.is_file():
                     self._merge_file(template_file, self.existing_dir / template_file.name)
             
-            print("✅ Directory merge completed")
+            print("🪐 Directory merge completed")
             return True
             
         except Exception as e:
@@ -185,7 +185,7 @@ class ClaudeDirectoryManager:
                         shutil.copy2(template_file, existing_file)
                         print(f"🔄 Updated: {existing_file.relative_to(self.existing_dir)} (backup created)")
                     else:
-                        print(f"✅ Up to date: {existing_file.relative_to(self.existing_dir)}")
+                        print(f"🪐 Up to date: {existing_file.relative_to(self.existing_dir)}")
                 else:
                     # New file
                     shutil.copy2(template_file, existing_file)

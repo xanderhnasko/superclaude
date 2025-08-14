@@ -6,5 +6,5 @@ with specialized AI agents, automated workflows, and intelligent caching.
 """
 
 __version__ = "1.0.0"
-__author__ = "Super CC Team"
+__author__ = "Xander Hnasko"
 __description__ = "Transform any repository into a high-productivity AI development environment"

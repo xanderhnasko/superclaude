@@ -39,7 +39,7 @@ def validate_environment(repo_path: Path) -> bool:
         if not dir_path.exists():
             issues.append(f"❌ Missing directory: .claude/{dir_name}/")
         else:
-            print(f"✅ Found: .claude/{dir_name}/")
+            print(f"🪐 Found: .claude/{dir_name}/")
     
     # Validate agents
     agent_issues, agent_warnings = _validate_agents(claude_dir / "agents")
@@ -78,7 +78,7 @@ def validate_environment(repo_path: Path) -> bool:
             print(f"   {issue}")
         return False
     
-    print("\n✅ Super CC environment is valid and ready to use!")
+    print("\n🧿 Super CC environment is valid and ready to use!")
     return True
 
 
@@ -110,7 +110,7 @@ def _validate_agents(agents_dir: Path) -> Tuple[List[str], List[str]]:
             except Exception:
                 warnings.append(f"⚠️  Could not read agent file: {agent_file}")
     
-    print(f"✅ Found {len(list(agents_dir.glob('*.md')))} agent files")
+    print(f"🪐 Found {len(list(agents_dir.glob('*.md')))} agent files")
     return issues, warnings
 
 
@@ -132,7 +132,7 @@ def _validate_commands(commands_dir: Path) -> Tuple[List[str], List[str]]:
         if not command_path.exists():
             issues.append(f"❌ Missing command: {command_file}")
     
-    print(f"✅ Found {len(list(commands_dir.glob('*.md')))} command files")
+    print(f"🪐 Found {len(list(commands_dir.glob('*.md')))} command files")
     return issues, warnings
 
 
@@ -156,7 +156,7 @@ def _validate_hooks(hooks_dir: Path) -> Tuple[List[str], List[str]]:
             if not hook_path.stat().st_mode & 0o111:
                 warnings.append(f"⚠️  Hook not executable: {hook_file}")
     
-    print(f"✅ Found {len(list(hooks_dir.glob('*.sh')))} hook files")
+    print(f"🪐 Found {len(list(hooks_dir.glob('*.sh')))} hook files")
     return issues, warnings
 
 
@@ -173,7 +173,7 @@ def _validate_workflows(workflows_dir: Path) -> Tuple[List[str], List[str]]:
     if not workflow_files:
         warnings.append("⚠️  No workflow files found")
     
-    print(f"✅ Found {len(workflow_files)} workflow files")
+    print(f"🪐 Found {len(workflow_files)} workflow files")
     return issues, warnings
 
 
@@ -193,7 +193,7 @@ def _validate_claude_code() -> Tuple[List[str], List[str]]:
         
         if result.returncode == 0:
             version_output = result.stdout.strip()
-            print(f"✅ Claude Code found: {version_output}")
+            print(f"🪐 Claude Code found: {version_output}")
             
             # Check for minimum version if needed
             # This would require parsing version string

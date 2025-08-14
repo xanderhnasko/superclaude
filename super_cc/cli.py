@@ -78,7 +78,7 @@ Examples:
             installer = SuperCCInstaller(Path(args.path))
             result = installer.install(force=args.force, backup=args.backup)
             if result:
-                print("✅ Super CC environment initialized successfully!")
+                print("🧿Super CC initialized successfully!")
                 print(f"   Repository: {Path(args.path).resolve()}")
                 print("   Next steps:")
                 print("   1. cd to your repository")
@@ -91,7 +91,7 @@ Examples:
         elif args.command == "validate":
             result = validate_environment(Path(args.path))
             if result:
-                print("✅ Super CC environment is valid and ready to use.")
+                print("🧿 Super CC environment is valid and ready to use.")
             else:
                 print("❌ Issues found with Super CC environment.")
                 return 1
@@ -100,7 +100,7 @@ Examples:
             installer = SuperCCInstaller(Path(args.path))
             result = installer.upgrade()
             if result:
-                print("✅ Super CC environment upgraded successfully!")
+                print("🧿 Super CC environment upgraded successfully!")
             else:
                 print("❌ Upgrade failed. Check error messages above.")
                 return 1

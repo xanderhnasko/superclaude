@@ -51,7 +51,7 @@ class SuperCCInstaller:
                 print(f"⚠️  .claude directory already exists at: {self.claude_dir}")
                 if backup:
                     if self._create_backup():
-                        print("✅ Existing .claude directory backed up")
+                        print("🪐 Existing .claude directory backed up")
                     else:
                         print("❌ Failed to create backup")
                         return False
@@ -77,7 +77,7 @@ class SuperCCInstaller:
             # Detect and suggest language-specific tools
             self._suggest_language_tools()
             
-            print("✅ Super CC environment installed successfully!")
+            print("🧿 Super CC environment installed successfully!")
             return True
             
         except Exception as e:
@@ -110,7 +110,7 @@ class SuperCCInstaller:
             # Ensure hooks are executable
             self._make_hooks_executable()
             
-            print("✅ Super CC environment upgraded successfully!")
+            print("🧿 Super CC environment upgraded successfully!")
             return True
             
         except Exception as e:
