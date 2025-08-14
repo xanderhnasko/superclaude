@@ -1,0 +1,57 @@
+name: test-workflow
+description: Simple test workflow to validate orchestration system
+version: "1.0"
+
+parameters:
+  - name: test_message
+    description: Message to display during test
+    default: "Testing workflow orchestration"
+  - name: enable_parallel
+    description: Whether to test parallel execution
+    type: boolean
+    default: true
+
+parallel_groups:
+  test_group:
+    description: Test parallel execution
+    agents:
+      - test-agent-1
+      - test-agent-2
+
+steps:
+  - name: context_check
+    agent: context-synth
+    description: "Quick context analysis for testing"
+    params:
+      files: "docs/*.md"
+    output_var: "test_context"
+  
+  - name: simple_bash_test
+    type: bash
+    command: "echo 'Workflow test: {{parameters.test_message}}'"
+    description: "Test variable substitution"
+    output_var: "bash_output"
+  
+  - name: conditional_step
+    agent: planner
+    condition: "{{parameters.enable_parallel}}"
+    description: "Test conditional execution"
+    inputs:
+      - "{{test_context}}"
+    output_var: "conditional_result"
+  
+  - name: parallel_test
+    type: parallel_group
+    group: test_group
+    condition: "{{parameters.enable_parallel}}"
+    description: "Test parallel execution (simulated)"
+    inputs:
+      - "{{bash_output}}"
+    output_var: "parallel_results"
+
+success_criteria:
+  - test_complete: true
+
+state_tracking:
+  - test_status
+  - step_outputs

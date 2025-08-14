@@ -1,0 +1,173 @@
+name: feature-development
+description: Standard TDD workflow for feature implementation
+version: "1.0"
+
+# Workflow parameters that can be passed in
+parameters:
+  - name: files
+    description: File glob patterns for context synthesis
+    default: "src/**/*.py docs/*.md"
+  - name: feature_description
+    description: Description of the feature to implement
+    required: true
+  - name: major_feature
+    description: Whether this is a major architectural change
+    type: boolean
+    default: false
+
+# Groups of agents that can run in parallel
+parallel_groups:
+  review_checks:
+    description: Independent review checks that can run simultaneously
+    agents:
+      - static-analyzer
+      - security-scanner  
+      - style-checker
+  
+  test_validation:
+    description: Different types of tests that can run in parallel
+    agents:
+      - unit-tests
+      - integration-tests
+
+# Main workflow steps
+steps:
+  - name: context_setup
+    agent: context-synth
+    description: "Build project context from relevant files"
+    params: 
+      files: "{{parameters.files}}"
+    output_var: "project_context"
+  
+  - name: architecture_review
+    agent: architect
+    condition: "{{parameters.major_feature}}"
+    description: "Review architectural implications for major features"
+    inputs:
+      - "{{project_context}}"
+      - "{{parameters.feature_description}}"
+    output_var: "architecture_guidance"
+  
+  - name: planning
+    agent: planner
+    description: "Create detailed implementation plan"
+    inputs:
+      - "{{project_context}}"
+      - "{{parameters.feature_description}}"
+      - "{{architecture_guidance}}"
+    output_var: "implementation_plan"
+  
+  - name: tdd_loop
+    description: "Test-Driven Development implementation cycle"
+    type: loop
+    condition: "until_tests_pass"
+    max_iterations: 10
+    substeps:
+      - name: write_tests
+        agent: tester
+        description: "Write failing tests for current task"
+        inputs:
+          - "{{implementation_plan}}"
+          - "{{current_task}}"
+        output_var: "test_files"
+      
+      - name: run_initial_tests
+        type: bash
+        command: "pytest -v {{test_files}}"
+        description: "Run tests (should fail initially)"
+        expected_result: "failure"
+      
+      - name: implement_code
+        agent: main
+        action: "implement"
+        description: "Write code to make tests pass"
+        inputs:
+          - "{{test_files}}"
+          - "{{implementation_plan}}"
+          - "{{current_task}}"
+        output_var: "implementation_files"
+      
+      - name: run_tests
+        type: bash
+        command: "pytest -v {{test_files}}"
+        description: "Run tests to check implementation"
+        output_var: "test_results"
+      
+      - name: debug_failures
+        agent: debugger
+        condition: "on_test_failure"
+        description: "Diagnose and fix test failures"
+        inputs:
+          - "{{test_results}}"
+          - "{{implementation_files}}"
+          - "{{test_files}}"
+        output_var: "debug_recommendations"
+      
+      - name: apply_fixes
+        agent: main
+        condition: "{{debug_recommendations}}"
+        action: "fix"
+        description: "Apply debugger recommendations"
+        inputs:
+          - "{{debug_recommendations}}"
+  
+  - name: refactoring
+    agent: cleaner
+    condition: "on_tests_pass"
+    description: "Clean up and refactor implemented code"
+    inputs:
+      - "{{implementation_files}}"
+      - "{{test_files}}"
+    output_var: "refactored_files"
+  
+  - name: parallel_reviews
+    type: parallel_group
+    group: review_checks
+    description: "Run all review checks in parallel"
+    inputs:
+      - "{{refactored_files}}"
+      - "{{implementation_files}}"
+    output_var: "review_results"
+  
+  - name: ai_code_review
+    agent: reviewer
+    description: "AI-powered code review"
+    inputs:
+      - "{{refactored_files}}"
+      - "{{implementation_files}}"
+      - "{{review_results}}"
+    output_var: "code_review"
+  
+  - name: integration_testing
+    agent: integration-tester
+    condition: "major_feature"
+    description: "Run integration tests for system-wide validation"
+    inputs:
+      - "{{implementation_files}}"
+    output_var: "integration_results"
+  
+  - name: final_validation
+    type: bash
+    command: "pytest -v && echo 'All tests passing'"
+    description: "Final test suite validation"
+    required: true
+
+# Workflow completion conditions
+success_criteria:
+  - all_tests_pass: true
+  - code_review_approved: true
+  - static_analysis_clean: true
+
+# Error handling
+on_error:
+  - retry_step: true
+    max_retries: 3
+  - fallback_to_manual: true
+
+# State management
+state_tracking:
+  - current_task
+  - completed_tasks
+  - test_status
+  - review_status
+  - implementation_files

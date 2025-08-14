@@ -1,0 +1,206 @@
+# Conditional Agent Triggering Configuration
+# Defines smart agent selection logic and workflow branching conditions
+
+condition_definitions:
+  # Parameter-based conditions
+  major_feature:
+    type: "parameter"
+    expression: "{{parameters.major_feature == true}}"
+    description: "Triggers for major architectural changes"
+    triggers:
+      - architect_review
+      - integration_testing
+      - comprehensive_documentation
+  
+  security_focused:
+    type: "parameter"
+    expression: "{{parameters.review_type == 'security'}}"
+    description: "Security-focused workflow path"
+    triggers:
+      - security_scanner
+      - vulnerability_assessment
+      - secrets_detection
+  
+  # State-based conditions
+  on_test_failure:
+    type: "state"
+    expression: "test_results.exit_code != 0"
+    description: "Triggered when tests fail"
+    triggers:
+      - debugger_agent
+      - error_analysis
+      - rollback_consideration
+  
+  on_tests_pass:
+    type: "state"
+    expression: "test_results.exit_code == 0"
+    description: "Triggered when tests pass"
+    triggers:
+      - code_cleanup
+      - refactoring_review
+      - integration_testing
+  
+  high_complexity:
+    type: "analysis"
+    expression: "complexity_metrics.cyclomatic > 10"
+    description: "Code complexity exceeds threshold"
+    triggers:
+      - refactoring_agent
+      - architecture_review
+      - documentation_update
+  
+  security_issues_found:
+    type: "analysis"
+    expression: "security_scan.critical_issues > 0"
+    description: "Critical security issues detected"
+    triggers:
+      - security_specialist
+      - immediate_review
+      - deployment_block
+
+# Condition evaluation logic
+evaluation_engine:
+  parameter_substitution:
+    syntax: "{{parameter_path}}"
+    sources:
+      - workflow_parameters
+      - step_outputs
+      - environment_variables
+  
+  expression_evaluation:
+    operators:
+      comparison: ["==", "!=", ">", "<", ">=", "<="]
+      logical: ["&&", "||", "!"]
+      string: ["contains", "startsWith", "endsWith"]
+      type: ["isNull", "isDefined", "isEmpty"]
+  
+  boolean_conversion:
+    truthy_values: [true, "true", 1, "yes", "on"]
+    falsy_values: [false, "false", 0, "no", "off", null]
+
+# Dynamic workflow branching
+branching_logic:
+  conditional_steps:
+    if_condition:
+      syntax: "condition: '{{expression}}'"
+      behavior: "Execute step only if condition is true"
+    
+    unless_condition:
+      syntax: "unless: '{{expression}}'"
+      behavior: "Execute step only if condition is false"
+    
+    switch_condition:
+      syntax: |
+        switch: "{{variable}}"
+        cases:
+          value1: [step1, step2]
+          value2: [step3, step4]
+          default: [step5]
+      behavior: "Execute different step sequences based on variable value"
+  
+  parallel_group_conditions:
+    conditional_inclusion:
+      description: "Include agents in parallel group based on conditions"
+      example: |
+        parallel_groups:
+          security_checks:
+            condition: "{{parameters.include_security}}"
+            agents:
+              - security_scanner
+              - vulnerability_checker
+  
+  loop_conditions:
+    while_loop:
+      syntax: "while: '{{condition}}'"
+      description: "Continue loop while condition is true"
+    
+    until_loop:
+      syntax: "until: '{{condition}}'"
+      description: "Continue loop until condition becomes true"
+    
+    for_each_loop:
+      syntax: "for_each: '{{array_variable}}'"
+      description: "Execute substeps for each item in array"
+
+# Smart agent selection
+agent_selection_rules:
+  context_based:
+    file_type_mapping:
+      "*.py": [python_specialist, type_checker]
+      "*.js": [javascript_specialist, eslint_runner]
+      "*.ts": [typescript_specialist, type_checker]
+      "*.md": [documentation_specialist, markdown_linter]
+      "*.yaml": [config_specialist, yaml_validator]
+  
+  complexity_based:
+    low_complexity:
+      criteria: "lines_changed < 50"
+      agents: [basic_reviewer, style_checker]
+    
+    medium_complexity:
+      criteria: "50 <= lines_changed < 200"
+      agents: [comprehensive_reviewer, security_scanner, performance_analyzer]
+    
+    high_complexity:
+      criteria: "lines_changed >= 200"
+      agents: [architect, comprehensive_reviewer, integration_tester, performance_analyzer]
+  
+  error_pattern_based:
+    test_failures:
+      patterns: ["AssertionError", "TypeError", "ValueError"]
+      agents: [debugger, test_specialist]
+    
+    security_issues:
+      patterns: ["SQL injection", "XSS", "CSRF"]
+      agents: [security_specialist, vulnerability_scanner]
+    
+    performance_issues:
+      patterns: ["timeout", "memory", "slow"]
+      agents: [performance_specialist, profiler]
+
+# Condition monitoring
+monitoring_system:
+  state_watchers:
+    test_status:
+      watch: "test_results.status"
+      triggers:
+        passed: [cleanup_agent, documentation_update]
+        failed: [debugger_agent, error_reporter]
+        timeout: [performance_analyzer, resource_monitor]
+  
+  metric_thresholds:
+    code_coverage:
+      threshold: 80
+      below_threshold: [test_enhancement_agent]
+      above_threshold: [quality_maintainer]
+    
+    performance_regression:
+      threshold: "10%"
+      exceeded: [performance_optimizer, regression_analyzer]
+  
+  external_triggers:
+    git_hooks:
+      pre_commit: [style_checker, basic_tests]
+      post_commit: [integration_tests, documentation_sync]
+    
+    ci_cd_integration:
+      build_success: [deployment_preparer]
+      build_failure: [failure_analyzer, notification_sender]
+
+# Fallback strategies
+fallback_handling:
+  agent_unavailable:
+    strategy: "use_alternative_agent"
+    alternatives:
+      primary_reviewer: [backup_reviewer, basic_checker]
+      security_scanner: [manual_security_checklist]
+  
+  condition_evaluation_failure:
+    strategy: "default_to_safe_path"
+    safe_defaults:
+      unknown_file_type: [generic_reviewer]
+      missing_metrics: [basic_validation]
+  
+  timeout_handling:
+    agent_timeout: "skip_and_log"
+    workflow_timeout: "pause_for_manual_intervention"

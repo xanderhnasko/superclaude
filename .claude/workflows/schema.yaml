@@ -1,0 +1,159 @@
+# Workflow Configuration Schema for Super Claude Code
+# This defines the structure and capabilities of workflow YAML files
+
+workflow_schema:
+  version: "1.0"
+  
+  required_fields:
+    - name: "Workflow identifier"
+    - description: "Human-readable workflow description"
+    - version: "Workflow version for compatibility"
+    - steps: "Array of workflow steps"
+  
+  optional_fields:
+    - parameters: "Input parameters for the workflow"
+    - parallel_groups: "Definition of parallel execution groups"
+    - success_criteria: "Conditions for successful completion"
+    - on_error: "Error handling configuration"
+    - state_tracking: "Variables to track in workflow state"
+    - output_artifacts: "Artifacts produced by workflow"
+
+parameter_types:
+  string:
+    description: "Text parameter"
+    example: "Add user authentication"
+  boolean: 
+    description: "True/false parameter"
+    example: true
+  array:
+    description: "List of values"
+    example: ["src/**/*.py", "tests/**/*.py"]
+  object:
+    description: "Structured data"
+    example: {"key": "value"}
+
+step_types:
+  agent:
+    description: "Delegate task to specialized agent"
+    required_fields: [agent, description]
+    optional_fields: [inputs, output_var, condition]
+  
+  bash:
+    description: "Execute shell command"
+    required_fields: [command, description]
+    optional_fields: [output_var, expected_result, timeout]
+  
+  parallel_group:
+    description: "Execute parallel group of agents/commands"
+    required_fields: [group, description]
+    optional_fields: [inputs, output_var]
+  
+  loop:
+    description: "Execute substeps iteratively"
+    required_fields: [substeps, condition]
+    optional_fields: [max_iterations, description]
+
+condition_types:
+  parameter_based:
+    description: "Condition based on workflow parameters"
+    examples:
+      - "{{parameters.major_feature}}"
+      - "{{parameters.review_type == 'security'}}"
+  
+  state_based:
+    description: "Condition based on workflow state"
+    examples:
+      - "on_test_failure"
+      - "on_tests_pass"
+      - "until_tests_pass"
+  
+  output_based:
+    description: "Condition based on previous step outputs"
+    examples:
+      - "{{test_results.exit_code != 0}}"
+      - "{{review_results.critical_issues > 0}}"
+
+parallel_execution:
+  group_definition:
+    description: "Named groups of independent agents/tasks"
+    example:
+      review_checks:
+        description: "Independent review tasks"
+        agents:
+          - static-analyzer
+          - security-scanner
+          - style-checker
+  
+  coordination_strategy:
+    wait_for_all: "Wait for all parallel tasks to complete"
+    fail_fast: "Stop on first failure"
+    best_effort: "Continue even if some tasks fail"
+  
+  result_aggregation:
+    merge: "Combine all outputs into single result"
+    array: "Store outputs as array of results"
+    individual: "Store each output with agent name as key"
+
+variable_substitution:
+  syntax: "{{variable_name}}"
+  sources:
+    - "parameters.*"
+    - "step_outputs.*" 
+    - "workflow_state.*"
+  
+  examples:
+    - "{{parameters.feature_description}}"
+    - "{{project_context}}"
+    - "{{test_results.exit_code}}"
+
+state_management:
+  persistence_location: ".claude/state/workflows/"
+  state_file_format: "{workflow_name}-{timestamp}.json"
+  
+  state_structure:
+    metadata: "Workflow identification and timing"
+    execution_context: "Current position and variables"
+    step_history: "Completed steps with inputs/outputs"
+    parallel_tracking: "Active and completed parallel groups"
+  
+  resume_capability:
+    supported: true
+    resume_from: "last_completed_step + 1"
+    state_validation: "Verify state integrity before resume"
+
+error_handling:
+  retry_strategies:
+    step_retry:
+      max_retries: 3
+      backoff: "exponential"
+    
+    workflow_retry:
+      restart_from: "failed_step"
+      preserve_state: true
+  
+  fallback_options:
+    manual_intervention: "Pause for human intervention"
+    alternative_path: "Execute alternative workflow branch"
+    graceful_degradation: "Skip non-critical steps"
+
+agent_integration:
+  delegation_pattern: "Use the {agent_name} agent to {description}"
+  input_format: "Structured inputs passed to agent context"
+  output_capture: "Store agent outputs in workflow variables"
+  
+  supported_agents:
+    - context-synth
+    - architect
+    - planner
+    - tester
+    - debugger
+    - cleaner
+    - reviewer
+    - documenter
+    - integration-tester
+
+workflow_validation:
+  syntax_check: "YAML syntax and schema validation"
+  agent_availability: "Verify all referenced agents exist"
+  dependency_check: "Ensure step dependencies are satisfied"
+  parameter_validation: "Check required parameters are provided"
