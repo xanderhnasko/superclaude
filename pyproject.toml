@@ -33,10 +33,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "[https://github.com/xanderhnasko/superclaude](https://github.com/xanderhnasko/superclaude)"
-Documentation = "[https://github.com/xanderhnasko/superclaude](https://github.com/xanderhnasko/superclaude)#readme"
-Repository = "[https://github.com/xanderhnasko/superclaude](https://github.com/xanderhnasko/superclaude)"
-Issues = "[https://github.com/xanderhnasko/superclaude](https://github.com/xanderhnasko/superclaude)/issues"
+Homepage = "https://github.com/xanderhnasko/superclaude"
+Documentation = "https://github.com/xanderhnasko/superclaude#readme"
+Repository = "https://github.com/xanderhnasko/superclaude"
+Issues = "https://github.com/xanderhnasko/superclaude/issues"
 
 [project.scripts]
 super-cc = "super_cc.cli:main"
