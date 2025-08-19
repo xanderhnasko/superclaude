@@ -39,7 +39,7 @@ Repository = "[https://github.com/xanderhnasko/superclaude](https://github.com/x
 Issues = "[https://github.com/xanderhnasko/superclaude](https://github.com/xanderhnasko/superclaude)/issues"
 
 [project.scripts]
-super-cc = "super\_cc.cli:main"
+super-cc = "super_cc.cli:main"
 
 [project.optional-dependencies]
 dev = [
@@ -50,10 +50,13 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["super\_cc"]
+packages = ["super_cc"]
+artifacts = ["super_cc/templates/.claude/**/*"]
 
-[tool.hatch.build.targets.wheel.force-include]
-"super\_cc/templates" = "super\_cc/templates"
+[tool.hatch.build.targets.sdist]
+artifacts = ["super_cc/templates/.claude/**/*"]
+
+
 
 [tool.black]
 line-length = 88
@@ -67,7 +70,7 @@ extend-exclude = '''
 .eggs
 \| \.git
 \| \.hg
-\| \.mypy\_cache
+| \.mypy_cache
 \| \.tox
 \| \.venv
 \| build
@@ -97,20 +100,20 @@ ignore = [
 "**init**.py" = ["F401"]
 
 [tool.mypy]
-python\_version = "3.8"
-warn\_return\_any = true
-warn\_unused\_configs = true
-disallow\_untyped\_defs = true
-disallow\_incomplete\_defs = true
-check\_untyped\_defs = true
-disallow\_untyped\_decorators = true
-no\_implicit\_optional = true
-warn\_redundant\_casts = true
-warn\_unused\_ignores = true
-warn\_no\_return = true
-warn\_unreachable = true
-strict\_equality = true
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
 
 [[tool.mypy.overrides]]
-module = "tests.\*"
-disallow\_untyped\_defs = false
+module = "tests.*"
+disallow_untyped_defs = false
