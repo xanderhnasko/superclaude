@@ -15,7 +15,10 @@ pip install super-cc
 cd your-project
 super-cc init
 
-# Open a fresh Claude Code chat and start, ex:
+# Optionally, see a full list of the new commands/workflows
+super-cc help 
+
+# Open a fresh Claude Code chat and start cranking, ex:
 /tdd "implement a user auth system"
 ```
 
