@@ -184,7 +184,7 @@ Examples:
             return 0
                 
     except KeyboardInterrupt:
-        print("\n⏹️  Operation cancelled by user.")
+        print("\n🫧 Operation cancelled by user.")
         return 1
     except Exception as e:
         print(f"❌ Error: {e}")

@@ -123,7 +123,7 @@ class ClaudeDirectoryManager:
             True if merge successful, False otherwise
         """
         try:
-            print("🔄 Merging directory structures...")
+            print("🫧 Merging directory structures...")
             
             # Process each subdirectory
             for template_subdir in self.template_dir.iterdir():
@@ -135,7 +135,7 @@ class ClaudeDirectoryManager:
                 if template_file.is_file():
                     self._merge_file(template_file, self.existing_dir / template_file.name)
             
-            print("🪐 Directory merge completed")
+            print("🫧 Directory merge completed")
             return True
             
         except Exception as e:
@@ -159,7 +159,7 @@ class ClaudeDirectoryManager:
             self._merge_config_directory(template_subdir, existing_subdir)
         elif subdir_name in {"logs", "state", "cache"}:
             # Don't overwrite user data directories
-            print(f"⏭️  Skipping user data directory: {subdir_name}/")
+            print(f"🫧  Skipping user data directory: {subdir_name}/")
         else:
             # Default: copy new files, don't overwrite existing
             self._merge_default_directory(template_subdir, existing_subdir)
@@ -183,13 +183,13 @@ class ClaudeDirectoryManager:
                         backup_path = existing_dir / backup_name
                         shutil.copy2(existing_file, backup_path)
                         shutil.copy2(template_file, existing_file)
-                        print(f"🔄 Updated: {existing_file.relative_to(self.existing_dir)} (backup created)")
+                        print(f"🫧 Updated: {existing_file.relative_to(self.existing_dir)} (backup created)")
                     else:
-                        print(f"🪐 Up to date: {existing_file.relative_to(self.existing_dir)}")
+                        print(f"🫧 Up to date: {existing_file.relative_to(self.existing_dir)}")
                 else:
                     # New file
                     shutil.copy2(template_file, existing_file)
-                    print(f"➕ Added: {existing_file.relative_to(self.existing_dir)}")
+                    print(f"🫧 Added: {existing_file.relative_to(self.existing_dir)}")
     
     def _merge_default_directory(self, template_dir: Path, existing_dir: Path) -> None:
         """Merge directory with default strategy (add new, keep existing).
@@ -204,7 +204,7 @@ class ClaudeDirectoryManager:
             if template_file.is_file():
                 if not existing_file.exists():
                     shutil.copy2(template_file, existing_file)
-                    print(f"➕ Added: {existing_file.relative_to(self.existing_dir)}")
+                    print(f"🫧 Added: {existing_file.relative_to(self.existing_dir)}")
             elif template_file.is_dir():
                 existing_file.mkdir(exist_ok=True)
                 self._merge_default_directory(template_file, existing_file)
@@ -222,7 +222,7 @@ class ClaudeDirectoryManager:
                 backup_path = existing_file.parent / backup_name
                 shutil.copy2(existing_file, backup_path)
                 shutil.copy2(template_file, existing_file)
-                print(f"🔄 Updated: {existing_file.relative_to(self.existing_dir)} (backup created)")
+                print(f"🫧 Updated: {existing_file.relative_to(self.existing_dir)} (backup created)")
         else:
             shutil.copy2(template_file, existing_file)
-            print(f"➕ Added: {existing_file.relative_to(self.existing_dir)}")
+            print(f"🫧 Added: {existing_file.relative_to(self.existing_dir)}")

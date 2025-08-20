@@ -21,7 +21,7 @@ def validate_environment(repo_path: Path) -> bool:
     repo_path = Path(repo_path).resolve()
     claude_dir = repo_path / ".claude"
     
-    print(f"🔍 Validating Super CC environment: {repo_path}")
+    print(f"🧼 Validating Super CC environment: {repo_path}")
     
     issues = []
     warnings = []
@@ -39,7 +39,7 @@ def validate_environment(repo_path: Path) -> bool:
         if not dir_path.exists():
             issues.append(f"❌ Missing directory: .claude/{dir_name}/")
         else:
-            print(f"🪐 Found: .claude/{dir_name}/")
+            print(f"🫧 Found: .claude/{dir_name}/")
     
     # Validate agents
     agent_issues, agent_warnings = _validate_agents(claude_dir / "agents")
@@ -193,7 +193,7 @@ def _validate_claude_code() -> Tuple[List[str], List[str]]:
         
         if result.returncode == 0:
             version_output = result.stdout.strip()
-            print(f"🪐 Claude Code found: {version_output}")
+            print(f"🫧 Claude Code found: {version_output}")
             
             # Check for minimum version if needed
             # This would require parsing version string
