@@ -1,12 +1,12 @@
 # Super CC
 
-This project and accompanying package is my attempt to share my favorite Claude Code configuration.
+This project and [accompanying package](https://pypi.org/manage/project/super-cc/releases/) is my attempt to share my favorite Claude Code configuration.
 
 *But why?*
 
-The key to using AI-coding tools more effectively than the next person (crazy world!) really just boils down to **context management**. Claude Code is already really powerful, but by properly utilizing subagents (with their own context windows and unique tool permissions), CC feels much more like a capable dev team rather than an often-overburdened, generalist agent.
+The key to using AI-coding tools more effectively than the next person (crazy world!) really just boils down to **context management**. Claude Code is already impressively powerful, but by properly utilizing subagents (with their own context windows and unique tool permissions), CC feels much more like a capable dev team rather than an often-overburdened, generalist agent.
 
-This package contains the subagents and worflows that I have *personally* found to be most useful for my projects (like forcing Test-Driven Development and context synthesis with file-level json summaries), but by no means is it a one-size-fits all setup. Feel free to use this config as a foundation and create/edit/delete subagents and worflows as you see fit.
+This package contains the subagents and worflows that I have *personally* found to be most useful for my projects (like forcing Test-Driven Development and context synthesis with file-level json summaries), but by no means is it a one-size-fits-all setup. Feel free to use this config as a foundation and create/edit/delete subagents and workflows as you see fit.
 
 **TLDR Quick Start:**
 
@@ -605,7 +605,7 @@ Available within `claude chat` after initialization:
 
 ## Agent Trigger Word Reference
 
-You can force (or avoid) the use of subagents by using some of the following trigger words in your requests:
+**You can force (or avoid) the use of subagents by using some of the following trigger words in your requests:**
 
 ### Planner Agent
 
@@ -753,7 +753,7 @@ cd .claude/context && ls -la
 rm -rf .claude/context/summaries/ && /context-synth "src/**"
 ```
 
-**Issue: Hooks not executing**
+**Hooks not executing**
 
 ```bash
 # Check hook permissions
@@ -806,38 +806,6 @@ tail -f .claude/logs/agent_activity.log
 
 # Cache efficiency trends
 /cache-status --history
-```
-
-## Contributing and Development
-
-### Contributing to Super CC
-
-**Repository Structure:**
-
-``` text
-super_cc/
-├── cli.py              # CLI interface and argument parsing
-├── installer.py        # Repository initialization and upgrade logic
-├── validation.py       # Environment validation and health checks
-├── integration.py      # Git integration and smart merging
-└── templates/          # Agent, command, and workflow templates
-    └── .claude/        # Template directory structure
-```
-
-**Development Setup:**
-
-``` bash
-git clone https://github.com/your-username/super-cc.git
-cd super-cc
-pip install -e ".[dev]"
-
-# Run tests
-pytest
-
-# Validate code quality
-black .
-ruff check .
-mypy .
 ```
 
 **Adding New Agents:**
