@@ -39,7 +39,7 @@ class SuperCCInstaller:
             True if installation successful, False otherwise
         """
         try:
-            print(f"🚀 Installing Super CC environment in: {self.target_path}")
+            print(f"🧼 Installing Super CC environment in: {self.target_path}")
             
             # Validate target directory exists
             if not self.target_path.exists():
@@ -77,7 +77,7 @@ class SuperCCInstaller:
             # Detect and suggest language-specific tools
             self._suggest_language_tools()
             
-            print("🧿 Super CC environment installed successfully!")
+            print("� Super CC environment installed successfully!")
             return True
             
         except Exception as e:
@@ -110,7 +110,7 @@ class SuperCCInstaller:
             # Ensure hooks are executable
             self._make_hooks_executable()
             
-            print("🧿 Super CC environment upgraded successfully!")
+            print("� Super CC environment upgraded successfully!")
             return True
             
         except Exception as e:
@@ -154,7 +154,7 @@ class SuperCCInstaller:
             
             # Copy template directory
             shutil.copytree(self.templates_dir, self.claude_dir)
-            print("📁 Template files installed")
+            print("� Template files installed")
             return True
             
         except Exception as e:
@@ -168,7 +168,7 @@ class SuperCCInstaller:
             for hook_file in hooks_dir.glob("*.sh"):
                 try:
                     os.chmod(hook_file, 0o755)
-                    print(f"🔧 Made executable: {hook_file.name}")
+                    print(f"� Made executable: {hook_file.name}")
                 except Exception as e:
                     print(f"⚠️  Warning: Could not make {hook_file.name} executable: {e}")
     
@@ -186,7 +186,7 @@ class SuperCCInstaller:
         # Create logs directory
         logs_dir = self.claude_dir / "logs"
         logs_dir.mkdir(exist_ok=True)
-        print("📝 Logs directory ready")
+        print("� Logs directory ready")
     
     def _suggest_language_tools(self) -> None:
         """Suggest language-specific tools based on project files."""

@@ -78,7 +78,7 @@ def validate_environment(repo_path: Path) -> bool:
             print(f"   {issue}")
         return False
     
-    print("\n🧿 Super CC environment is valid and ready to use!")
+    print("\n🫧 Super CC environment is valid and ready to use!")
     return True
 
 

@@ -49,7 +49,7 @@ class GitignoreManager:
                 return True
             
             self._append_missing_entries(missing_entries)
-            print(f"Added {len(missing_entries)} entries to .gitignore")
+            print(f"🫧 Added {len(missing_entries)} entries to .gitignore")
             return True
             
         except Exception as e:

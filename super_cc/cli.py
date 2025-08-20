@@ -13,6 +13,76 @@ from .installer import SuperCCInstaller
 from .validation import validate_environment
 
 
+def show_help():
+    """Display comprehensive help for Super CC commands and workflows."""
+    print()
+    print("🫧" * 52)
+    print("🫧🫧 Super CC: Multi-Agent Claude Code Environment 🫧🫧")
+    print("🫧" * 52)
+    print()
+    
+    print("🧼 CLI COMMANDS:")
+    print("  super-cc init [path]     Initialize Super CC environment")
+    print("  super-cc validate [path] Validate current setup")
+    print("  super-cc upgrade [path]  Update to latest agents/commands") 
+    print("  super-cc help           Show this help information")
+    print()
+    
+    print("🧼 CLAUDE CHAT COMMANDS (available after initialization):")
+    print()
+    
+    print("  🫧 Core Development:")
+    print("    /tdd \"feature description\"    Start complete TDD cycle")
+    print("    /review                        Multi-pass code review")
+    print("    /workflow <name> [options]     Execute YAML workflows")
+    print()
+    
+    print("  🫧 Context & Analysis:")
+    print("    /context \"pattern\"            Analyze project structure")
+    print("    /context-synth \"glob/pattern\" Create JSON context digest")
+    print("    /agent-status                  Per-agent performance tracking")
+    print()
+    
+    print("  🫧 Performance & Optimization:")
+    print("    /cache-status                  Cache hit rates and efficiency")
+    print("    /cache-optimize                Performance optimization tips")
+    print("    /token-usage                   Token consumption analysis")
+    print("    /eco-mode <mode>               Set performance mode")
+    print()
+    
+    print("  🫧 State Management:")
+    print("    /revert                        Rollback to last good state")
+    print("    /revert --commit <hash>        Revert to specific commit")
+    print()
+    
+    print("🧼 AVAILABLE WORKFLOWS:")
+    print("  /workflow feature-development  Complete TDD workflow for new features")
+    print("  /workflow bug-fix             Diagnostic workflow for bug resolution")
+    print("  /workflow refactoring         Code cleanup and improvement workflow")
+    print("  /workflow review-only         Comprehensive code review pipeline")
+    print()
+    
+    print("🧼 AGENT TRIGGER PATTERNS (use in natural language):")
+    print("  \"Plan the implementation...\"   → Planner Agent")
+    print("  \"Write tests for...\"          → Tester Agent")
+    print("  \"Review this code...\"         → Reviewer Agent")
+    print("  \"Debug this error...\"         → Debugger Agent")
+    print("  \"Design the architecture...\"  → Architect Agent")
+    print("  \"Document this feature...\"    → Documenter Agent")
+    print("  \"Analyze the codebase...\"     → Context Synthesizer")
+    print("  \"Orchestrate this workflow...\" → Workflow Orchestrator")
+    print()
+    
+    print("🧼 QUICK START:")
+    print("  1. cd your-project")
+    print("  2. super-cc init")
+    print("  3. claude chat")
+    print("  4. Try: /tdd \"implement user authentication\"")
+    print()
+    
+    print("🧼 More info: https://github.com/xanderhnasko/super-cc")
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -67,6 +137,9 @@ Examples:
         help="Path to repository (default: current directory)"
     )
     
+    # Help command
+    subparsers.add_parser("help", help="Show all available commands and workflows")
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -78,12 +151,13 @@ Examples:
             installer = SuperCCInstaller(Path(args.path))
             result = installer.install(force=args.force, backup=args.backup)
             if result:
-                print("🧿Super CC initialized successfully!")
+                print("🫧 Super CC initialized successfully!")
                 print(f"   Repository: {Path(args.path).resolve()}")
                 print("   Next steps:")
                 print("   1. cd to your repository")
                 print("   2. Run: claude chat")
                 print("   3. Try: /tdd 'your feature description'")
+                print("   4. Use: super-cc help (to see all commands & workflows)")
             else:
                 print("❌ Installation failed. Check error messages above.")
                 return 1
@@ -91,7 +165,7 @@ Examples:
         elif args.command == "validate":
             result = validate_environment(Path(args.path))
             if result:
-                print("🧿 Super CC environment is valid and ready to use.")
+                print("🫧 Super CC environment is valid and ready to use.")
             else:
                 print("❌ Issues found with Super CC environment.")
                 return 1
@@ -100,10 +174,14 @@ Examples:
             installer = SuperCCInstaller(Path(args.path))
             result = installer.upgrade()
             if result:
-                print("🧿 Super CC environment upgraded successfully!")
+                print("🫧 Super CC environment upgraded successfully!")
             else:
                 print("❌ Upgrade failed. Check error messages above.")
                 return 1
+                
+        elif args.command == "help":
+            show_help()
+            return 0
                 
     except KeyboardInterrupt:
         print("\n⏹️  Operation cancelled by user.")
