@@ -49,6 +49,7 @@ claude chat  # Launch Claude with Super CC agents available
 ```
 
 **3\. Natural Language Invocation**
+
 Subagents activate automatically based on your requests:
 
 ``` text
@@ -300,15 +301,17 @@ User action → Pre-hook (validation) → Tool execution → Post-hook (cleanup)
 3. Tests execute and fail (confirming test validity)
 
 **Green Phase (Implementation):**
-4\. Minimal code implementation to pass tests
-5\. Iterative development with frequent test runs
-6\. Debugger Agent assists with any test failures
+
+4. Minimal code implementation to pass tests
+5. Iterative development with frequent test runs
+6. Debugger Agent assists with any test failures
 
 **Refactor Phase (Quality):**
-7\. Code review by Reviewer Agent
-8\. Static analysis\, security scanning\, style checking
-9\. Documentation updates by Documenter Agent
-10\. Final validation and commit preparation
+
+7. Code review by Reviewer Agent
+8. Static analysis\, security scanning\, style checking
+9. Documentation updates by Documenter Agent
+10. Final validation and commit preparation
 
 ### Multi-Pass Review Pipeline
 
