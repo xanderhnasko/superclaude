@@ -1,6 +1,6 @@
 # Super CC
 
-This project and [accompanying package](https://pypi.org/manage/project/super-cc/releases/) is my attempt to share my favorite Claude Code configuration.
+This project and [accompanying package](https://pypi.org/project/super-cc/) is my attempt to share my favorite Claude Code configuration.
 
 *But why?*
 
